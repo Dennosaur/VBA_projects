@@ -1,0 +1,34 @@
+Sub ReplaceShapesToSymbol_sameCell()
+    Dim ws As Worksheet
+    Dim shp As Shape
+    Dim cell As Range
+    
+    ' Set the worksheet where the shapes are located
+    'Set ws = ThisWorkbook.Worksheets("Sheet1") ' Replace "Sheet1" with your actual worksheet name
+    Set ws = ThisWorkbook.ActiveSheet
+    
+    ' Loop through each shape in the worksheet
+    For Each shp In ws.Shapes
+        ' Check if the shape is a round shape (change the condition if needed)
+        'If shp.AutoShapeType = msoShapeOval Then
+        If shp.AutoShapeType = msoShapeFlowchartConnector Then
+            ' Get the corresponding symbol from the adjacent cell
+            Set cell = shp.TopLeftCell.Offset(0, 0) ' Assuming the symbol is in the cell next to the shape
+            
+            ' Replace the shape with the symbol from the cell
+            Dim symbol As String
+            symbol = ChrW(110) ' Replace 80 with the Unicode value of the symbol you want to use
+            Dim existingText As String
+            existingText = cell.Value
+            cell.Value = symbol & Chr(10) & Chr(10) & existingText
+            
+            ' Set the font color of the inserted symbol to match the fill color of the replaced shape
+            cell.Characters(Start:=1, Length:=Len(symbol)).Font.Color = shp.Fill.ForeColor.RGB
+            cell.Characters(Start:=1, Length:=Len(symbol)).Font.Name = "Webdings"
+            
+            'Delete the shape
+            shp.Delete
+            
+        End If
+    Next shp
+End Sub
